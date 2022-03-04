@@ -2,9 +2,13 @@ import com.soywiz.klock.milliseconds
 import com.soywiz.klock.seconds
 import com.soywiz.korge.Korge
 import com.soywiz.korge.animate.animateSequence
+import com.soywiz.korge.service.storage.Storage
+import com.soywiz.korge.tween.*
 import com.soywiz.korge.view.*
 import com.soywiz.korim.color.Colors
+import com.soywiz.korio.async.async
 import com.soywiz.korio.async.delay
+import com.soywiz.korio.async.launch
 import com.soywiz.korio.async.launchImmediately
 import com.soywiz.korma.interpolation.Easing
 import kotlin.random.Random
@@ -48,7 +52,7 @@ suspend fun main() = Korge(bgcolor = Colors["#78909c"]) {
         addFood()
     }
 
-    var items = listOf(
+    val items = listOf(
         Bacteria(views),
         Bacteria(views),
         Bacteria(views),
@@ -78,20 +82,27 @@ suspend fun main() = Korge(bgcolor = Colors["#78909c"]) {
     launchImmediately {
         while (true) {
             delay(2.seconds)
-            items = items + Bacteria(views)
+            val view = Bacteria(views)
+            view.positionRandom()
+            addChild(view)
+            runAnimation(view)
         }
     }
 
     items.forEach {
-        launchImmediately {
-            while (true) {
-                animateSequence {
-                    parallel {
-                        val position = it.go()
-                        it.moveToWithSpeed(position.x, position.y, it.speedItem, Easing.LINEAR)
-                    }
-                    block { }
+        runAnimation(it)
+    }
+}
+
+fun Stage.runAnimation(view: Bacteria) {
+    launchImmediately {
+        while (view.parent != null) {
+            animateSequence {
+                parallel {
+                    val position = view.go()
+                    view.moveToWithSpeed(position.x, position.y, view.speedItem, Easing.LINEAR)
                 }
+                block { }
             }
         }
     }
