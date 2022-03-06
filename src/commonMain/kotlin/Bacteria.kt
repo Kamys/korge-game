@@ -12,17 +12,16 @@ class Bacteria(
         private set
     private var movePosition = getRandomPosition()
 
-
     init {
+        val thisContainer = this
         view.name = "Bacteria"
-        val text = text("0 text, speed: $speedItem")
+        val text = text("")
         text.addUpdater {
             this.text = "$sizeItem speed: $speedItem"
         }
-        val thisBacteria = this
         this.onCollision {
             if (it is Bacteria) {
-                thisBacteria.tryEat(it)
+                thisContainer.tryEat(it)
             }
         }
     }
@@ -62,14 +61,19 @@ class Bacteria(
             return
         }
         val childrenColor = this.color
-        listOf(
-            Bacteria(views, childrenColor),
-            Bacteria(views, childrenColor),
-            Bacteria(views, childrenColor),
-        ).forEach {
-            it.xy(this.x, this.y)
-            parent?.addChild(it)
-            stage?.runAnimation(it)
+        val childrenX = this.x
+        val childrenY = this.y
+
+        parent!!.run {
+            bacteria(views, childrenColor)
+                .xy(childrenX, childrenY)
+                .start()
+            bacteria(views, childrenColor)
+                .xy(childrenX, childrenY)
+                .start()
+            bacteria(views, childrenColor)
+                .xy(childrenX, childrenY)
+                .start()
         }
         kill()
     }
@@ -83,5 +87,9 @@ class Bacteria(
             bacteria.kill()
             eatFood()
         }
+    }
+
+    fun start() {
+        this.stage!!.runAnimation(this)
     }
 }

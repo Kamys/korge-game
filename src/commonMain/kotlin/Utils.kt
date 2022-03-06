@@ -1,5 +1,4 @@
-import com.soywiz.korge.view.View
-import com.soywiz.korge.view.position
+import com.soywiz.korge.view.*
 import com.soywiz.korim.color.Colors
 import com.soywiz.korim.color.RGBA
 
@@ -10,9 +9,16 @@ fun View.position(position: Position) {
 }
 
 fun Double.almostEqual(value: Double, eps: Double): Boolean {
-    return this in (value-eps)..(value+eps);
+    return this in (value - eps)..(value + eps);
 }
 
 fun getRandomColor(): RGBA {
     return Colors.colorsByName.values.random()
+}
+
+fun Container.bacteria(views: Views, color: RGBA = getRandomColor()): Bacteria {
+    val bacteria = Bacteria(views, color)
+    bacteria.addTo(this)
+    this.addChild(bacteria)
+    return bacteria
 }

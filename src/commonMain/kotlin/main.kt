@@ -2,13 +2,9 @@ import com.soywiz.klock.milliseconds
 import com.soywiz.klock.seconds
 import com.soywiz.korge.Korge
 import com.soywiz.korge.animate.animateSequence
-import com.soywiz.korge.service.storage.Storage
-import com.soywiz.korge.tween.*
 import com.soywiz.korge.view.*
 import com.soywiz.korim.color.Colors
-import com.soywiz.korio.async.async
 import com.soywiz.korio.async.delay
-import com.soywiz.korio.async.launch
 import com.soywiz.korio.async.launchImmediately
 import com.soywiz.korma.interpolation.Easing
 import kotlin.random.Random
@@ -55,16 +51,16 @@ suspend fun main() = Korge(bgcolor = Colors["#78909c"]) {
     }
 
     val items = listOf(
-        Bacteria(views),
-        Bacteria(views),
-        Bacteria(views),
-        Bacteria(views),
-        Bacteria(views),
+        bacteria(views),
+        bacteria(views),
+        bacteria(views),
+        bacteria(views),
+        bacteria(views),
     )
 
     items.forEach {
         it.positionRandom()
-        addChild(it)
+        it.start()
     }
 
     launchImmediately {
@@ -79,15 +75,10 @@ suspend fun main() = Korge(bgcolor = Colors["#78909c"]) {
     launchImmediately {
         while (true) {
             delay(2.seconds)
-            val view = Bacteria(views)
+            val view = bacteria(views)
             view.positionRandom()
-            addChild(view)
-            runAnimation(view)
+            view.start()
         }
-    }
-
-    items.forEach {
-        runAnimation(it)
     }
 }
 
