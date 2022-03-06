@@ -15,7 +15,8 @@ import kotlin.random.Random
 
 suspend fun main() = Korge(bgcolor = Colors["#78909c"]) {
     val main = this
-    fun getRandomPosition(): Position {
+
+    fun Stage.getRandomPosition(): Position {
         return Position(
             x = Random.nextDouble(views.virtualWidth.toDouble()),
             y = Random.nextDouble(views.virtualHeight.toDouble())
@@ -25,6 +26,7 @@ suspend fun main() = Korge(bgcolor = Colors["#78909c"]) {
     fun View.positionRandom() {
         position(getRandomPosition())
     }
+
 
     fun addFood() {
         val a = solidRect(10, 10, Colors["#00c853"])
@@ -63,11 +65,6 @@ suspend fun main() = Korge(bgcolor = Colors["#78909c"]) {
     items.forEach {
         it.positionRandom()
         addChild(it)
-        it.onCollision { item2 ->
-            if (item2 is Bacteria) {
-                it.tryEat(item2)
-            }
-        }
     }
 
     launchImmediately {

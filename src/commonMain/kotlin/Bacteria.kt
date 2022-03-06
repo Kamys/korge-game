@@ -1,11 +1,13 @@
 import com.soywiz.korge.view.*
-import com.soywiz.korim.color.Colors
+import com.soywiz.korim.color.RGBA
 import kotlin.random.Random
 
-class Bacteria(private val views: Views) : Container() {
-    private val view = solidRect(20, 20, Colors["#1976d2"])
-    var sizeItem = 0
-        private set
+class Bacteria(
+    private val views: Views,
+    private val color: RGBA = getRandomColor()
+) : Container() {
+    private val view = solidRect(20, 20, color)
+    private var sizeItem = 1
     var speedItem = 300.0
         private set
     private var movePosition = getRandomPosition()
@@ -16,6 +18,12 @@ class Bacteria(private val views: Views) : Container() {
         val text = text("0 text, speed: $speedItem")
         text.addUpdater {
             this.text = "$sizeItem speed: $speedItem"
+        }
+        val thisBacteria = this
+        this.onCollision {
+            if (it is Bacteria) {
+                thisBacteria.tryEat(it)
+            }
         }
     }
 
@@ -46,11 +54,34 @@ class Bacteria(private val views: Views) : Container() {
         if (speedItem > 100) {
             speedItem -= 30
         }
+        trayReproduction()
     }
 
-    fun tryEat(bacteria: Bacteria) {
-        if (this.sizeItem - 2 > bacteria.sizeItem) {
-            bacteria.parent?.removeChild(bacteria)
+    private fun trayReproduction() {
+        if (sizeItem < 10) {
+            return
+        }
+        val childrenColor = this.color
+        listOf(
+            Bacteria(views, childrenColor),
+            Bacteria(views, childrenColor),
+            Bacteria(views, childrenColor),
+        ).forEach {
+            it.xy(this.x, this.y)
+            parent?.addChild(it)
+            stage?.runAnimation(it)
+        }
+        kill()
+    }
+
+    private fun kill() {
+        parent?.removeChild(this)
+    }
+
+    private fun tryEat(bacteria: Bacteria) {
+        if (this.sizeItem > bacteria.sizeItem) {
+            bacteria.kill()
+            eatFood()
         }
     }
 }
