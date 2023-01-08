@@ -7,6 +7,7 @@ import com.soywiz.korim.color.Colors
 import com.soywiz.korio.async.delay
 import com.soywiz.korio.async.launchImmediately
 import com.soywiz.korma.interpolation.Easing
+import kotlinx.coroutines.Job
 import kotlin.random.Random
 
 suspend fun main() = Korge(bgcolor = Colors["#78909c"]) {
@@ -82,8 +83,8 @@ suspend fun main() = Korge(bgcolor = Colors["#78909c"]) {
     }
 }
 
-fun Stage.runAnimation(view: Bacteria) {
-    launchImmediately {
+fun Stage.runAnimation(view: Bacteria): Job {
+    return launchImmediately {
         while (view.parent != null) {
             animateSequence {
                 parallel {
